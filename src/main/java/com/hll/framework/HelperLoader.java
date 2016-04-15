@@ -1,9 +1,6 @@
 package com.hll.framework;
 
-import com.hll.framework.helper.BeanHelper;
-import com.hll.framework.helper.ClassHelper;
-import com.hll.framework.helper.ControllerHelper;
-import com.hll.framework.helper.IocHelper;
+import com.hll.framework.helper.*;
 import com.hll.framework.util.ClassUtil;
 
 /**
@@ -16,6 +13,7 @@ public final class HelperLoader {
     Class<?>[] classList = {
         ClassHelper.class,
         BeanHelper.class,
+        AopHelper.class,
         IocHelper.class,
         ControllerHelper.class
     };
