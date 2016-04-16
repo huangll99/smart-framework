@@ -1,9 +1,11 @@
 package com.hll.framework.helper;
 
 import com.hll.framework.annotation.Aspect;
+import com.hll.framework.annotation.Transaction;
 import com.hll.framework.proxy.AspectProxy;
 import com.hll.framework.proxy.Proxy;
 import com.hll.framework.proxy.ProxyManager;
+import com.hll.framework.proxy.TransactionProxy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,15 +46,24 @@ public final class AopHelper {
 
   private static Map<Class<?>, Set<Class<?>>> createProxyMap() throws Exception {
     Map<Class<?>, Set<Class<?>>> proxyMap = new HashMap<>();
-    Set<Class<?>> proxyClassSet = ClassHelper.getClassSetBySuper(AspectProxy.class);
-    for (Class<?> proxyClass : proxyClassSet) {
-      if (proxyClass.isAnnotationPresent(Aspect.class)) {
-        Aspect aspect = proxyClass.getAnnotation(Aspect.class);
-        Set<Class<?>> targetClassSet = createTargetClassSet(aspect);
-        proxyMap.put(proxyClass, targetClassSet);
-      }
-    }
+
+    addAspectProxy(proxyMap);
+    addTransactionProxy(proxyMap);
     return proxyMap;
+  }
+
+  private static void addTransactionProxy(Map<Class<?>, Set<Class<?>>> proxyMap) {
+    Set<Class<?>> serviceClassSet = ClassHelper.getServiceClassSet();
+    proxyMap.put(TransactionProxy.class,serviceClassSet);
+  }
+
+  private static void addAspectProxy(Map<Class<?>, Set<Class<?>>> proxyMap) {
+    Set<Class<?>> proxyClassSet = ClassHelper.getClassSetBySuper(AspectProxy.class);
+    proxyClassSet.stream().filter(proxyClass -> proxyClass.isAnnotationPresent(Aspect.class)).forEach(proxyClass -> {
+      Aspect aspect = proxyClass.getAnnotation(Aspect.class);
+      Set<Class<?>> targetClassSet = createTargetClassSet(aspect);
+      proxyMap.put(proxyClass, targetClassSet);
+    });
   }
 
 
